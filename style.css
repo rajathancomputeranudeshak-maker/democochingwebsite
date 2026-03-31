@@ -1,21 +1,20 @@
 /* =========================================
-   1. GLOBAL VARIABLES (Future-Proof Theme)
+   1. GOOGLE FONTS & VARIABLES
 ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 :root {
-    --primary-color: #2563eb; /* Trust Blue */
+    --primary: #2563eb;       /* Trust Blue */
     --primary-hover: #1d4ed8;
-    --secondary-color: #1e293b; /* Dark Slate */
-    --bg-light: #f8fafc; /* Off-white Background */
-    --text-main: #334155;
-    --text-muted: #64748b;
+    --secondary: #1e293b;     /* Dark Slate */
+    --bg: #f8fafc;            /* Off-white */
+    --text: #334155;
+    --text-light: #64748b;
     --white: #ffffff;
-    --transition: all 0.3s ease;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
 }
 
 /* =========================================
-   2. BASE RESET
+   2. BASE SETUP
 ========================================= */
 * {
     margin: 0;
@@ -25,8 +24,8 @@
 }
 
 body {
-    background-color: var(--bg-light);
-    color: var(--text-main);
+    background-color: var(--bg);
+    color: var(--text);
     line-height: 1.6;
 }
 
@@ -40,25 +39,24 @@ ul {
 }
 
 /* =========================================
-   3. PREMIUM NAVBAR
+   3. NAVBAR
 ========================================= */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 5%;
+    padding: 1.2rem 5%;
     background-color: var(--white);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     position: sticky;
     top: 0;
     z-index: 100;
 }
 
 .logo h2 {
-    color: var(--primary-color);
-    font-weight: 700;
+    color: var(--primary);
     font-size: 1.8rem;
-    letter-spacing: -0.5px;
+    font-weight: 700;
 }
 
 .nav-links {
@@ -66,15 +64,14 @@ ul {
     gap: 2rem;
 }
 
-.nav-links li a {
+.nav-links a {
     font-weight: 500;
-    color: var(--text-muted);
-    transition: var(--transition);
+    color: var(--text-light);
+    transition: 0.3s ease;
 }
 
-.nav-links li a:hover,
-.nav-links li a.active {
-    color: var(--primary-color);
+.nav-links a:hover, .nav-links a.active {
+    color: var(--primary);
 }
 
 .nav-buttons {
@@ -85,22 +82,21 @@ ul {
 
 .btn-login {
     font-weight: 600;
-    color: var(--secondary-color);
-    transition: var(--transition);
+    color: var(--secondary);
+    transition: 0.3s ease;
 }
 
 .btn-login:hover {
-    color: var(--primary-color);
+    color: var(--primary);
 }
 
 .btn-signup {
-    background-color: var(--primary-color);
+    background-color: var(--primary);
     color: var(--white);
     padding: 0.6rem 1.5rem;
     border-radius: 8px;
     font-weight: 500;
-    transition: var(--transition);
-    box-shadow: var(--shadow-sm);
+    transition: 0.3s ease;
 }
 
 .btn-signup:hover {
@@ -112,300 +108,196 @@ ul {
    4. HERO SECTION
 ========================================= */
 .hero {
+    min-height: 80vh;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 5rem 5%;
-    min-height: 80vh;
-    gap: 2rem;
+    padding: 0 5%;
+    /* हल्का सा ग्रेडिएंट बैकग्राउंड जो इसे प्रीमियम बनाता है */
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(37, 99, 235, 0) 100%);
 }
 
 .hero-content {
-    flex: 1;
-    max-width: 600px;
+    max-width: 650px;
 }
 
 .hero-content h1 {
     font-size: 3.5rem;
-    color: var(--secondary-color);
+    color: var(--secondary);
     line-height: 1.2;
     margin-bottom: 1.5rem;
 }
 
-.highlight {
-    color: var(--primary-color);
+.hero-content h1 span {
+    color: var(--primary);
 }
 
 .hero-content p {
     font-size: 1.1rem;
-    color: var(--text-muted);
-    margin-bottom: 2.5rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
 }
 
 .hero-buttons {
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
+    background-color: var(--primary);
     color: var(--white);
     padding: 0.8rem 2rem;
     border-radius: 8px;
     font-weight: 600;
-    transition: var(--transition);
-    box-shadow: var(--shadow-md);
+    transition: 0.3s ease;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-hover);
     transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
 }
 
 .btn-secondary {
     background-color: var(--white);
-    color: var(--secondary-color);
+    color: var(--secondary);
     padding: 0.8rem 2rem;
     border-radius: 8px;
     font-weight: 600;
+    transition: 0.3s ease;
     border: 1px solid #e2e8f0;
-    transition: var(--transition);
 }
 
 .btn-secondary:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
-.hero-image {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.hero-image img {
-    max-width: 100%;
-    border-radius: 20px;
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    border-color: var(--primary);
+    color: var(--primary);
 }
 
 /* =========================================
-   5. RESPONSIVE DESIGN (Mobiles & Tablets)
-========================================= */
-@media (max-width: 991px) {
-    .hero {
-        flex-direction: column;
-        text-align: center;
-        padding: 3rem 5%;
-    }
-    .hero-image {
-        margin-top: 3rem;
-        justify-content: center;
-    }
-    .hero-content h1 {
-        font-size: 2.8rem;
-    }
-    .hero-buttons {
-        justify-content: center;
-    }
-    .nav-links {
-        display: none; 
-    }
-}
-
-/* =========================================
-   6. COMMON SECTION STYLES
+   5. FEATURES & COURSES (Common)
 ========================================= */
 .features, .courses {
     padding: 5rem 5%;
 }
 
-.section-header {
+.section-title {
     text-align: center;
     margin-bottom: 3.5rem;
 }
 
-.section-header h2 {
+.section-title h2 {
     font-size: 2.5rem;
-    color: var(--secondary-color);
-    margin-bottom: 0.5rem;
+    color: var(--secondary);
 }
 
-.section-header p {
-    color: var(--text-muted);
-    font-size: 1.1rem;
-}
-
-/* =========================================
-   7. FEATURES SECTION
-========================================= */
-.feature-grid {
+/* Features Grid */
+.feature-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
 }
 
-.feature-card {
+.feature-box {
     background: var(--white);
-    padding: 2.5rem;
-    border-radius: 15px;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+    transition: 0.3s ease;
     border: 1px solid #f1f5f9;
 }
 
-.feature-card:hover {
+.feature-box:hover {
     transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--primary-color);
+    border-color: var(--primary);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
 
-.feature-card h3 {
-    font-size: 1.4rem;
-    color: var(--secondary-color);
+.feature-box h3 {
+    font-size: 1.3rem;
     margin-bottom: 1rem;
+    color: var(--secondary);
 }
 
-.feature-card p {
-    color: var(--text-muted);
+.feature-box p {
+    color: var(--text-light);
 }
 
-/* =========================================
-   8. COURSES SECTION
-========================================= */
+/* Courses Grid */
 .courses {
     background-color: var(--white);
 }
 
-.course-grid {
+.course-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
 }
 
-.course-card {
-    background: var(--bg-light);
-    border-radius: 15px;
+.course-box {
+    background: var(--bg);
     padding: 2.5rem;
-    position: relative;
-    transition: var(--transition);
+    border-radius: 12px;
+    transition: 0.3s ease;
     border: 1px solid #e2e8f0;
 }
 
-.course-card:hover {
+.course-box:hover {
     transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
 
-.course-badge {
-    position: absolute;
-    top: -15px;
-    right: 20px;
-    background: var(--primary-color);
-    color: var(--white);
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    box-shadow: var(--shadow-sm);
+.course-box h3 {
+    font-size: 1.4rem;
+    color: var(--secondary);
+    margin-bottom: 0.5rem;
 }
 
-.course-card h3 {
-    font-size: 1.5rem;
-    color: var(--secondary-color);
-    margin-bottom: 1rem;
-    margin-top: 0.5rem;
-}
-
-.course-card p {
-    color: var(--text-muted);
-    margin-bottom: 2rem;
-    min-height: 50px;
-}
-
-.course-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1.5rem;
-    border-top: 1px solid #cbd5e1;
+.course-box p {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
 }
 
 .price {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--secondary-color);
-}
-
-.btn-outline {
-    padding: 0.6rem 1.5rem;
-    border: 2px solid var(--primary-color);
-    color: var(--primary-color);
-    border-radius: 8px;
-    font-weight: 600;
-    transition: var(--transition);
-}
-
-.btn-outline:hover {
-    background: var(--primary-color);
-    color: var(--white);
+    color: var(--primary);
+    border-top: 1px solid #cbd5e1;
+    padding-top: 1rem;
 }
 
 /* =========================================
-   9. FOOTER SECTION
+   6. FOOTER
 ========================================= */
-.footer {
-    background-color: var(--secondary-color);
+footer {
+    background-color: var(--secondary);
     color: var(--white);
-    padding: 4rem 5% 1.5rem;
-}
-
-.footer-content {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 3rem;
-    margin-bottom: 3rem;
-}
-
-.footer-brand {
-    flex: 1;
-    min-width: 300px;
-}
-
-.footer-brand h2 {
-    color: var(--white);
-    font-size: 2rem;
-    margin-bottom: 1rem;
-}
-
-.footer-brand p {
-    color: #94a3b8;
-}
-
-.footer-links h3 {
-    margin-bottom: 1.5rem;
-    font-size: 1.2rem;
-}
-
-.footer-links ul li {
-    margin-bottom: 0.8rem;
-}
-
-.footer-links ul li a {
-    color: #94a3b8;
-    transition: var(--transition);
-}
-
-.footer-links ul li a:hover {
-    color: var(--primary-color);
-    padding-left: 5px; 
-}
-
-.footer-bottom {
+    padding: 3rem 5%;
     text-align: center;
-    padding-top: 1.5rem;
-    border-top: 1px solid #334155;
+}
+
+.footer-content h2 {
+    margin-bottom: 0.5rem;
+    color: var(--white);
+}
+
+.footer-content p {
     color: #94a3b8;
     font-size: 0.9rem;
+}
+
+/* =========================================
+   7. RESPONSIVE DESIGN (Mobiles)
+========================================= */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none; /* मोबाइल पर मेन्यू छुपा रहे हैं, बाद में JS से Hamburger Menu बनाएंगे */
+    }
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    .hero-buttons {
+        flex-direction: column;
+    }
+    .btn-primary, .btn-secondary {
+        text-align: center;
+    }
 }
