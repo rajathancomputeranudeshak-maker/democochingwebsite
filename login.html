@@ -48,8 +48,13 @@
         </div>
     </div>
 <script>
+        // यह याद रखेगा कि कौन सा टैब सेलेक्टेड है (default student है)
+        let currentLoginType = 'student';
+
         // Student/Admin Tab Switch Logic
         function switchTab(type) {
+            currentLoginType = type; // टैब बदलते ही टाइप अपडेट हो जाएगा
+            
             const buttons = document.querySelectorAll('.toggle-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
@@ -62,11 +67,16 @@
             }
         }
 
-        // Login Button Redirect Logic
+        // Smart Login Button Redirect Logic
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault(); // फॉर्म को रिफ्रेश होने से रोकेगा
-            // सीधा डैशबोर्ड पर भेज देगा
-            window.location.href = "student-dashboard.html";
+            
+            // अब यह चेक करेगा कि एडमिन है या स्टूडेंट, और उसी पेज पर भेजेगा!
+            if(currentLoginType === 'admin') {
+                window.location.href = "admin-dashboard.html";
+            } else {
+                window.location.href = "student-dashboard.html";
+            }
         });
     </script>
    
