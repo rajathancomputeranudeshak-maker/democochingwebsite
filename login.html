@@ -47,8 +47,8 @@
             </div>
         </div>
     </div>
-
-    <script>
+<script>
+        // Student/Admin Tab Switch Logic
         function switchTab(type) {
             const buttons = document.querySelectorAll('.toggle-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
@@ -61,6 +61,14 @@
                 emailInput.placeholder = "student@example.com";
             }
         }
+
+        // Login Button Redirect Logic
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // फॉर्म को रिफ्रेश होने से रोकेगा
+            // सीधा डैशबोर्ड पर भेज देगा
+            window.location.href = "student-dashboard.html";
+        });
     </script>
+   
 </body>
 </html>
