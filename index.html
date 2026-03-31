@@ -1,37 +1,121 @@
-<header class="navbar">
-        <div class="container nav-container">
-            <div class="logo">
-                <h2>Edu<span>Pro</span></h2>
-            </div>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="#" class="active">Home</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Courses</a></li>
-                    <li><a href="#">Library</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </nav>
-            <div class="nav-buttons">
-                <a href="#" class="btn btn-outline">Login</a>
-            </div>
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidyapeeth - Premium Coaching & Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <h2>Vidyapeeth.</h2>
         </div>
-    </header>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Courses</a></li>
+            <li><a href="#">Library</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+        <div class="nav-buttons">
+            <a href="#" class="btn-login">Login</a>
+            <a href="#" class="btn-signup">Student Panel</a>
+        </div>
+    </nav>
 
     <section class="hero">
-        <div class="container hero-container">
-            <div class="hero-content">
-                <h1>Shape Your Future with <br> <span>Premium Coaching</span></h1>
-                <p>Expert guidance, comprehensive notes, and a peaceful library environment. Everything you need to crack your exams under one roof.</p>
-                <div class="hero-buttons">
-                    <a href="#" class="btn btn-primary">Explore Courses</a>
-                    <a href="#" class="btn btn-secondary">Book Library Seat</a>
+        <div class="hero-content">
+            <h1>Shape Your Future with <span class="highlight">Expert Guidance</span></h1>
+            <p>Join the most premium coaching and library management system. We provide top-tier education and a peaceful environment for your success.</p>
+            <div class="hero-buttons">
+                <a href="#courses" class="btn-primary">Explore Courses</a>
+                <a href="#" class="btn-secondary">Book Library Seat</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Students studying in library">
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="section-header">
+            <h2>Why Choose <span class="highlight">Us?</span></h2>
+            <p>Experience the best environment for your preparation.</p>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>👨‍🏫 Expert Faculty</h3>
+                <p>Learn from highly experienced teachers dedicated to your success.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📚 Digital Library</h3>
+                <p>Access thousands of e-books, previous papers, and premium notes anytime.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🎯 Smart Mock Tests</h3>
+                <p>Regular tests with detailed performance analysis and all-India ranking.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="courses" id="courses">
+        <div class="section-header">
+            <h2>Our Premium <span class="highlight">Courses</span></h2>
+            <p>Structured batches designed to crack your target exams.</p>
+        </div>
+        <div class="course-grid">
+            <div class="course-card">
+                <div class="course-badge">New Batch</div>
+                <h3>Computer Instructor</h3>
+                <p>Complete syllabus coverage with practical labs and daily mock tests.</p>
+                <div class="course-footer">
+                    <span class="price">₹4,999</span>
+                    <a href="#" class="btn-outline">View Details</a>
                 </div>
             </div>
-            <div class="hero-image">
-                <div class="image-placeholder">
-                    <span>Hero Image Here</span>
+            <div class="course-card">
+                <div class="course-badge">Trending</div>
+                <h3>SSC CGL Foundation</h3>
+                <p>Pre + Mains complete preparation with updated study material.</p>
+                <div class="course-footer">
+                    <span class="price">₹5,999</span>
+                    <a href="#" class="btn-outline">View Details</a>
+                </div>
+            </div>
+            <div class="course-card">
+                <div class="course-badge">Library</div>
+                <h3>Premium Seating</h3>
+                <p>AC halls, high-speed Wi-Fi, and individual charging ports.</p>
+                <div class="course-footer">
+                    <span class="price">₹800/mo</span>
+                    <a href="#" class="btn-outline">Book Seat</a>
                 </div>
             </div>
         </div>
     </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h2>Vidyapeeth.</h2>
+                <p>Your ultimate destination for learning and focused preparation.</p>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact Support</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Vidyapeeth Coaching & Library. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
