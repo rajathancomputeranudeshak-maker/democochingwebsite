@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Vidyapeeth</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>Vidyapeeth.<span style="color: var(--text-muted); font-size: 1rem; display:block;">Admin Panel</span></h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active">📊 Overview</a></li>
+                <li><a href="#">👨‍🎓 Add/Manage Students</a></li>
+                <li><a href="#">💳 Fees Management</a></li>
+                <li><a href="#">📅 Update Attendance</a></li>
+                <li><a href="#">📚 Upload Notes</a></li>
+                <li><a href="#">🪑 Manage Library</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="index.html" class="logout-btn">🚪 Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="header-search">
+                    <input type="text" placeholder="Search student by name or ID...">
+                </div>
+                <div class="header-profile">
+                    <span class="notification">🔔</span>
+                    <div class="profile-info">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=1e293b&color=fff" alt="Admin Profile">
+                        <span>Director Sir</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <div class="welcome-banner" style="background: linear-gradient(135deg, var(--secondary) 0%, #334155 100%);">
+                    <h2>Admin Control Center ⚙️</h2>
+                    <p>Manage your coaching institute, track revenue, and monitor student performance from here.</p>
+                </div>
+
+                <div class="stats-grid dashboard-stats">
+                    <div class="stat-box widget-card">
+                        <h3>👨‍🎓 Total Students</h3>
+                        <p class="big-text">145</p>
+                    </div>
+                    <div class="stat-box widget-card">
+                        <h3>💳 Today's Collection</h3>
+                        <p class="big-text" style="color: #10b981;">₹15,500</p>
+                    </div>
+                    <div class="stat-box widget-card">
+                        <h3>🪑 Library Occupancy</h3>
+                        <p class="big-text">42 / 50</p>
+                    </div>
+                    <div class="stat-box widget-card">
+                        <h3>⚠️ Unpaid Fees</h3>
+                        <p class="big-text" style="color: #ef4444;">12 Students</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-widgets">
+                    
+                    <div class="widget">
+                        <h3>➕ Quick Add Student</h3>
+                        <form style="margin-top: 1rem;">
+                            <div class="input-group" style="margin-bottom: 1rem;">
+                                <input type="text" placeholder="Student Full Name" required style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            </div>
+                            <div class="input-group" style="margin-bottom: 1rem;">
+                                <input type="text" placeholder="Course (e.g., Computer Instructor)" required style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            </div>
+                            <div class="input-group" style="margin-bottom: 1rem;">
+                                <input type="number" placeholder="Fees Paid Today (₹)" required style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            </div>
+                            <button type="button" class="btn-primary" style="width: 100%;">Add Record</button>
+                        </form>
+                    </div>
+
+                    <div class="widget">
+                        <h3>📋 Recent Activities</h3>
+                        <table class="schedule-table">
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Action</th>
+                                <th>Time</th>
+                            </tr>
+                            <tr>
+                                <td>Rahul Kumar</td>
+                                <td><span style="color: #10b981; font-weight: 500;">Paid ₹4999</span></td>
+                                <td>10:30 AM</td>
+                            </tr>
+                            <tr>
+                                <td>Priya Sharma</td>
+                                <td><span style="color: var(--primary); font-weight: 500;">Joined Library</span></td>
+                                <td>11:15 AM</td>
+                            </tr>
+                            <tr>
+                                <td>Amit Singh</td>
+                                <td><span style="color: #ef4444; font-weight: 500;">Absent</span></td>
+                                <td>09:00 AM</td>
+                            </tr>
+                            <tr>
+                                <td>Neha Gupta</td>
+                                <td><span style="color: var(--text-muted); font-weight: 500;">Downloaded Notes</span></td>
+                                <td>01:20 PM</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
