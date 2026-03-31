@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vidyapeeth - Coaching & Library</title>
+    <title>Vidyapeeth - Premium Coaching & Library</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -13,11 +13,10 @@
             <h2>Vidyapeeth.</h2>
         </div>
         <ul class="nav-links">
-            <li><a href="#" class="active">Home</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Courses</a></li>
-            <li><a href="#">Library</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><a href="#home" class="active">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#courses">Courses</a></li>
+            <li><a href="#contact">Contact</a></li>
         </ul>
         <div class="nav-buttons">
             <a href="#" class="btn-login">Login</a>
@@ -25,13 +24,26 @@
         </div>
     </nav>
 
-    <section class="hero">
+    <section class="hero" id="home">
         <div class="hero-content">
             <h1>Shape Your Future with <span>Expert Guidance</span></h1>
             <p>Premium coaching classes and a peaceful library environment for your complete preparation.</p>
             <div class="hero-buttons">
                 <a href="#courses" class="btn-primary">Explore Courses</a>
-                <a href="#" class="btn-secondary">Book Library Seat</a>
+                <a href="#about" class="btn-secondary">Know More</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section" id="about">
+        <div class="about-container">
+            <div class="about-text">
+                <h2>Our Mission for <br><span>Your Success</span></h2>
+                <p>We built Vidyapeeth with a single goal: to provide top-quality education and a distraction-free environment for competitive exam aspirants.</p>
+                <p>Specially designed for upcoming exams like the Computer Instructor, our strategy is strictly focused on syllabus completion and daily mock tests. Your selection is our ultimate responsibility.</p>
+            </div>
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Students in coaching">
             </div>
         </div>
     </section>
@@ -79,7 +91,7 @@
         </div>
     </section>
 
-    <footer>
+    <footer id="contact">
         <div class="footer-content">
             <h2>Vidyapeeth.</h2>
             <p>&copy; 2026 Vidyapeeth Coaching & Library. All rights reserved.</p>
