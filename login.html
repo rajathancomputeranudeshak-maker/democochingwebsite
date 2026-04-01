@@ -6,55 +6,40 @@
     <title>Login - Vidyapeeth</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="login-page">
+<body class="login-body">
 
     <div class="login-container">
-        <div class="login-card">
-            
-            <div class="login-image">
-                <h2>Welcome Back!</h2>
-                <p>Log in to access your premium dashboard, mock tests, and library seat status.</p>
-            </div>
-
-            <div class="login-form-container">
-                <div class="login-header">
-                    <h2>Vidyapeeth.</h2>
-                    <p>Enter your credentials to continue</p>
-                </div>
-
-                <div class="login-toggle">
-                    <button class="toggle-btn active" onclick="switchTab('student')">Student</button>
-                    <button class="toggle-btn" onclick="switchTab('admin')">Admin</button>
-                </div>
-
-                <form id="loginForm" class="login-form">
-                    <div class="input-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" placeholder="student@example.com" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" placeholder="Enter your password" required>
-                    </div>
-                    <div class="form-options">
-                        <label><input type="checkbox"> Remember me</label>
-                        <a href="#" class="forgot-pass">Forgot Password?</a>
-                    </div>
-                    <button type="submit" class="btn-primary w-100">Login Now</button>
-                </form>
-
-                <p class="back-home"><a href="index.html">← Back to Home Page</a></p>
-            </div>
+        <div class="login-header">
+            <h2>Welcome to Vidyapeeth</h2>
+            <p>Login to your digital classroom</p>
         </div>
+
+        <div class="login-toggle">
+            <button class="toggle-btn active" onclick="switchTab('student')">👨‍🎓 Student</button>
+            <button class="toggle-btn" onclick="switchTab('admin')">👨‍💼 Admin</button>
+        </div>
+
+        <form id="loginForm" class="login-form">
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="student@example.com" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <div class="forgot-password">
+                <a href="#">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn-primary">Login Now</button>
+        </form>
     </div>
-<script>
-        // यह याद रखेगा कि कौन सा टैब सेलेक्टेड है (default student है)
+
+    <script>
         let currentLoginType = 'student';
 
-        // Student/Admin Tab Switch Logic
         function switchTab(type) {
-            currentLoginType = type; // टैब बदलते ही टाइप अपडेट हो जाएगा
-            
+            currentLoginType = type;
             const buttons = document.querySelectorAll('.toggle-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
@@ -66,19 +51,48 @@
                 emailInput.placeholder = "student@example.com";
             }
         }
+    </script>
 
-        // Smart Login Button Redirect Logic
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+        // आपकी असली मास्टर चाबी
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXqVjD-2nlKvhzqnrY2YFPjhpu9JUxuqc",
+            authDomain: "democoachingwebsite.firebaseapp.com",
+            projectId: "democoachingwebsite",
+            storageBucket: "democoachingwebsite.firebasestorage.app",
+            messagingSenderId: "682026393153",
+            appId: "1:682026393153:web:58e50285f2354816e330c0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
         document.getElementById('loginForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // फॉर्म को रिफ्रेश होने से रोकेगा
+            event.preventDefault();
             
-            // अब यह चेक करेगा कि एडमिन है या स्टूडेंट, और उसी पेज पर भेजेगा!
-            if(currentLoginType === 'admin') {
-                window.location.href = "admin-dashboard.html";
-            } else {
-                window.location.href = "student-dashboard.html";
-            }
+            const emailValue = document.getElementById('email').value;
+            const passwordValue = document.getElementById('password').value;
+            const btn = event.target.querySelector('button');
+            
+            btn.innerText = "Checking... ⏳";
+
+            signInWithEmailAndPassword(auth, emailValue, passwordValue)
+                .then((userCredential) => {
+                    alert("Login Successful! 🎉");
+                    if(currentLoginType === 'admin') {
+                        window.location.href = "admin-dashboard.html";
+                    } else {
+                        window.location.href = "student-dashboard.html";
+                    }
+                })
+                .catch((error) => {
+                    alert("गलत ईमेल या पासवर्ड! कृपया दोबारा चेक करें। ❌");
+                    btn.innerText = "Login Now"; 
+                });
         });
     </script>
-   
 </body>
 </html>
