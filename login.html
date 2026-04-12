@@ -3,61 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Vidyapeeth</title>
+    <title>Portal - Vidyapeeth</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .hidden { display: none !important; }
+        .auth-box { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .auth-header { text-align: center; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; }
+        .btn-auth { width: 100%; padding: 10px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-auth:hover { background: #1d4ed8; }
+        .auth-links { text-align: center; margin-top: 15px; font-size: 0.9rem; }
+        .auth-links a { color: #2563eb; cursor: pointer; text-decoration: none; }
+    </style>
 </head>
-<body class="login-body">
+<body style="background: #f1f5f9; font-family: sans-serif;">
 
-    <div class="login-container">
-        <div class="login-header">
-            <h2>Welcome to Vidyapeeth</h2>
-            <p>Login to your digital classroom</p>
+    <div class="auth-box">
+        <div class="auth-header">
+            <h2 id="formTitle">Login to Vidyapeeth</h2>
         </div>
 
-        <div class="login-toggle">
-            <button class="toggle-btn active" onclick="switchTab('student')">👨‍🎓 Student</button>
-            <button class="toggle-btn" onclick="switchTab('admin')">👨‍💼 Admin</button>
-        </div>
+        <form id="loginForm">
+            <div class="input-group"><input type="email" id="loginEmail" placeholder="Email Address" required></div>
+            <div class="input-group"><input type="password" id="loginPassword" placeholder="Password" required></div>
+            <button type="submit" id="loginBtn" class="btn-auth">Login Now</button>
+            <div class="auth-links">
+                <a onclick="showForm('forgot')">Forgot Password?</a> | 
+                <a onclick="showForm('signup')">New Student? Create Account</a>
+            </div>
+        </form>
 
-        <form id="loginForm" class="login-form">
-            <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" id="email" placeholder="student@example.com" required>
+        <form id="signupForm" class="hidden">
+            <div class="input-group"><input type="email" id="signupEmail" placeholder="Email Address" required></div>
+            <div class="input-group"><input type="password" id="signupPassword" placeholder="Create Password (Min 6 chars)" required></div>
+            <button type="submit" id="signupBtn" class="btn-auth" style="background: #10b981;">Create Account</button>
+            <div class="auth-links">
+                <a onclick="showForm('login')">Already have an account? Login</a>
             </div>
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="password" placeholder="Enter your password" required>
+        </form>
+
+        <form id="forgotForm" class="hidden">
+            <p style="font-size: 0.9rem; color: #64748b;">Enter your email to receive a password reset link.</p>
+            <div class="input-group"><input type="email" id="forgotEmail" placeholder="Registered Email" required></div>
+            <button type="submit" id="forgotBtn" class="btn-auth" style="background: #f59e0b;">Send Reset Link</button>
+            <div class="auth-links">
+                <a onclick="showForm('login')">Back to Login</a>
             </div>
-            <div class="forgot-password">
-                <a href="#">Forgot Password?</a>
-            </div>
-            <button type="submit" class="btn-primary">Login Now</button>
         </form>
     </div>
 
-    <script>
-        let currentLoginType = 'student';
-
-        function switchTab(type) {
-            currentLoginType = type;
-            const buttons = document.querySelectorAll('.toggle-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            const emailInput = document.getElementById('email');
-            if(type === 'admin') {
-                emailInput.placeholder = "admin@vidyapeeth.com";
-            } else {
-                emailInput.placeholder = "student@example.com";
-            }
-        }
-    </script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
-        // आपकी असली मास्टर चाबी
         const firebaseConfig = {
             apiKey: "AIzaSyAXqVjD-2nlKvhzqnrY2YFPjhpu9JUxuqc",
             authDomain: "democoachingwebsite.firebaseapp.com",
@@ -70,28 +69,85 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+        // --- UI TOGGLE LOGIC ---
+        window.showForm = (type) => {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('forgotForm').classList.add('hidden');
             
-            const emailValue = document.getElementById('email').value;
-            const passwordValue = document.getElementById('password').value;
-            const btn = event.target.querySelector('button');
-            
+            if(type === 'login') { document.getElementById('loginForm').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Login to Vidyapeeth"; }
+            if(type === 'signup') { document.getElementById('signupForm').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Create Student Account"; }
+            if(type === 'forgot') { document.getElementById('forgotForm').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Reset Password"; }
+        };
+
+        // --- 1. LOGIN LOGIC (Strict Admin Check) ---
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
             btn.innerText = "Checking... ⏳";
 
-            signInWithEmailAndPassword(auth, emailValue, passwordValue)
+            signInWithEmailAndPassword(auth, email, pass)
                 .then((userCredential) => {
-                    alert("Login Successful! 🎉");
-                    if(currentLoginType === 'admin') {
+                    // STRICT CHECK: सिर्फ admin@vidyapeeth.com ही एडमिन पेज पर जाएगा
+                    if(userCredential.user.email === "admin@vidyapeeth.com") {
                         window.location.href = "admin-dashboard.html";
                     } else {
                         window.location.href = "student-dashboard.html";
                     }
                 })
                 .catch((error) => {
-                    alert("गलत ईमेल या पासवर्ड! कृपया दोबारा चेक करें। ❌");
-                    btn.innerText = "Login Now"; 
+                    alert("Wrong Email or Password! ❌");
+                    btn.innerText = "Login Now";
                 });
+        });
+
+        // --- 2. SIGN UP LOGIC (New Student) ---
+        document.getElementById('signupForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signupEmail').value;
+            const pass = document.getElementById('signupPassword').value;
+            const btn = document.getElementById('signupBtn');
+            btn.innerText = "Creating... ⏳";
+
+            createUserWithEmailAndPassword(auth, email, pass)
+                .then((userCredential) => {
+                    alert("Account Created Successfully! 🎉");
+                    window.location.href = "student-dashboard.html"; // सीधे स्टूडेंट डैशबोर्ड
+                })
+                .catch((error) => {
+                    alert("Error: " + error.message);
+                    btn.innerText = "Create Account";
+                });
+        });
+
+        // --- 3. FORGOT PASSWORD LOGIC ---
+        document.getElementById('forgotForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgotEmail').value;
+            const btn = document.getElementById('forgotBtn');
+            btn.innerText = "Sending... ⏳";
+
+            sendPasswordResetEmail(auth, email)
+                .then(() => {
+                    alert("✅ Password reset link sent to your email! Check your inbox.");
+                    showForm('login');
+                    btn.innerText = "Send Reset Link";
+                })
+                .catch((error) => {
+                    alert("Error: User not found or invalid email.");
+                    btn.innerText = "Send Reset Link";
+                });
+        });
+        // --- 🔒 ADMIN SECURITY LOCK ---
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+        const authAuth = getAuth(app);
+        onAuthStateChanged(authAuth, (user) => {
+            if (!user || user.email !== "admin@vidyapeeth.com") {
+                alert("⛔ VIP Access Only! You are not the Admin.");
+                window.location.href = "login.html"; // भगा दो इसे
+            }
         });
     </script>
 </body>
