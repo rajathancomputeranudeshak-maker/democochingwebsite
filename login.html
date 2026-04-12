@@ -11,10 +11,11 @@
         .auth-header { text-align: center; margin-bottom: 20px; }
         .input-group { margin-bottom: 15px; }
         .input-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; }
-        .btn-auth { width: 100%; padding: 10px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-auth { width: 100%; padding: 10px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;}
         .btn-auth:hover { background: #1d4ed8; }
         .auth-links { text-align: center; margin-top: 15px; font-size: 0.9rem; }
-        .auth-links a { color: #2563eb; cursor: pointer; text-decoration: none; }
+        .auth-links span { color: #2563eb; cursor: pointer; font-weight: bold; }
+        .auth-links span:hover { text-decoration: underline; }
     </style>
 </head>
 <body style="background: #f1f5f9; font-family: sans-serif;">
@@ -29,8 +30,8 @@
             <div class="input-group"><input type="password" id="loginPassword" placeholder="Password" required></div>
             <button type="submit" id="loginBtn" class="btn-auth">Login Now</button>
             <div class="auth-links">
-                <a onclick="showForm('forgot')">Forgot Password?</a> | 
-                <a onclick="showForm('signup')">New Student? Create Account</a>
+                <span onclick="showForm('forgot')">Forgot Password?</span> | 
+                <span onclick="showForm('signup')">New Student? Create Account</span>
             </div>
         </form>
 
@@ -39,7 +40,7 @@
             <div class="input-group"><input type="password" id="signupPassword" placeholder="Create Password (Min 6 chars)" required></div>
             <button type="submit" id="signupBtn" class="btn-auth" style="background: #10b981;">Create Account</button>
             <div class="auth-links">
-                <a onclick="showForm('login')">Already have an account? Login</a>
+                <span onclick="showForm('login')">Already have an account? Login</span>
             </div>
         </form>
 
@@ -48,10 +49,22 @@
             <div class="input-group"><input type="email" id="forgotEmail" placeholder="Registered Email" required></div>
             <button type="submit" id="forgotBtn" class="btn-auth" style="background: #f59e0b;">Send Reset Link</button>
             <div class="auth-links">
-                <a onclick="showForm('login')">Back to Login</a>
+                <span onclick="showForm('login')">Back to Login</span>
             </div>
         </form>
     </div>
+
+    <script>
+        function showForm(type) {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('forgotForm').classList.add('hidden');
+            
+            if(type === 'login') { document.getElementById('loginForm').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Login to Vidyapeeth"; }
+            if(type === 'signup') { document.getElementById('signupForm').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Create Student Account"; }
+            if(type === 'forgot') { document.getElementById('forgotForm').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Reset Password"; }
+        }
+    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
@@ -69,18 +82,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // --- UI TOGGLE LOGIC ---
-        window.showForm = (type) => {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('signupForm').classList.add('hidden');
-            document.getElementById('forgotForm').classList.add('hidden');
-            
-            if(type === 'login') { document.getElementById('loginForm').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Login to Vidyapeeth"; }
-            if(type === 'signup') { document.getElementById('signupForm').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Create Student Account"; }
-            if(type === 'forgot') { document.getElementById('forgotForm').classList.remove('hidden'); document.getElementById('formTitle').innerText = "Reset Password"; }
-        };
-
-        // --- 1. LOGIN LOGIC (Strict Admin Check) ---
+        // 1. LOGIN
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -90,7 +92,6 @@
 
             signInWithEmailAndPassword(auth, email, pass)
                 .then((userCredential) => {
-                    // STRICT CHECK: सिर्फ admin@vidyapeeth.com ही एडमिन पेज पर जाएगा
                     if(userCredential.user.email === "admin@vidyapeeth.com") {
                         window.location.href = "admin-dashboard.html";
                     } else {
@@ -103,7 +104,7 @@
                 });
         });
 
-        // --- 2. SIGN UP LOGIC (New Student) ---
+        // 2. SIGN UP
         document.getElementById('signupForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('signupEmail').value;
@@ -114,7 +115,7 @@
             createUserWithEmailAndPassword(auth, email, pass)
                 .then((userCredential) => {
                     alert("Account Created Successfully! 🎉");
-                    window.location.href = "student-dashboard.html"; // सीधे स्टूडेंट डैशबोर्ड
+                    window.location.href = "student-dashboard.html";
                 })
                 .catch((error) => {
                     alert("Error: " + error.message);
@@ -122,7 +123,7 @@
                 });
         });
 
-        // --- 3. FORGOT PASSWORD LOGIC ---
+        // 3. FORGOT PASSWORD
         document.getElementById('forgotForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('forgotEmail').value;
@@ -139,15 +140,6 @@
                     alert("Error: User not found or invalid email.");
                     btn.innerText = "Send Reset Link";
                 });
-        });
-        // --- 🔒 ADMIN SECURITY LOCK ---
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-        const authAuth = getAuth(app);
-        onAuthStateChanged(authAuth, (user) => {
-            if (!user || user.email !== "admin@vidyapeeth.com") {
-                alert("⛔ VIP Access Only! You are not the Admin.");
-                window.location.href = "login.html"; // भगा दो इसे
-            }
         });
     </script>
 </body>
