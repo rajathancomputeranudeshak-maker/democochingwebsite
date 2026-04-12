@@ -3,28 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Vidyapeeth (Infinity Edition)</title>
+    <title>Admin Panel - Vidyapeeth (God Mode)</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* CSS Variables for Dark/Light Mode Magic */
-        :root {
-            --panel-bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --border-col: #e2e8f0;
-        }
-        
-        /* Dark Mode Theme */
-        body.dark-mode {
-            --panel-bg: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --border-col: #334155;
-            background-color: var(--panel-bg);
-            color: var(--text-main);
-        }
-
-        /* Applying theme to specific elements */
+        :root { --panel-bg: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --border-col: #e2e8f0; }
+        body.dark-mode { --panel-bg: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc; --border-col: #334155; background-color: var(--panel-bg); color: var(--text-main); }
         body.dark-mode .dashboard-content, body.dark-mode .main-content { background: var(--panel-bg); }
         body.dark-mode .widget, body.dark-mode .stat-box { background: var(--card-bg); border-color: var(--border-col); color: var(--text-main); }
         body.dark-mode h3, body.dark-mode p { color: var(--text-main) !important; }
@@ -34,34 +18,24 @@
         body.dark-mode .student-table tr:hover { background-color: #334155; }
         body.dark-mode .header-search input { background: #1e293b; color: white;}
         
-        /* Table & Action Buttons Styles */
         .student-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         .student-table th, .student-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-col); }
         .student-table th { background-color: #f8fafc; color: #1e293b; font-weight: 600; }
         .student-table tr:hover { background-color: #f1f5f9; }
         
-        .btn-action { color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 4px; font-weight: bold;}
-        .btn-delete { background: #ef4444; } .btn-delete:hover { background: #dc2626; }
-        .btn-edit { background: #3b82f6; } .btn-edit:hover { background: #2563eb; }
-        .btn-print { background: #f59e0b; } .btn-print:hover { background: #d97706; }
+        .btn-action { color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 4px; font-weight: bold; transition: 0.2s;}
+        .btn-delete { background: #ef4444; } .btn-delete:hover { background: #dc2626; transform: scale(1.1);}
+        .btn-edit { background: #3b82f6; } .btn-edit:hover { background: #2563eb; transform: scale(1.1);}
+        .btn-print { background: #f59e0b; } .btn-print:hover { background: #d97706; transform: scale(1.1);}
+        .btn-whatsapp { background: #25D366; } .btn-whatsapp:hover { background: #128C7E; transform: scale(1.1);}
         .btn-export { background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; float: right;}
         
-        /* Dark Mode Toggle Button */
         .theme-toggle { background: transparent; border: 2px solid #cbd5e1; font-size: 1.2rem; cursor: pointer; padding: 5px 10px; border-radius: 20px; transition: 0.3s; }
         body.dark-mode .theme-toggle { border-color: #475569; }
 
-        /* Toast Notifications */
-        .toast {
-            position: fixed; bottom: 20px; right: 20px;
-            color: white; padding: 12px 24px; border-radius: 8px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            transform: translateY(100px); opacity: 0; transition: all 0.3s ease;
-            z-index: 1000; font-weight: 500;
-        }
+        .toast { position: fixed; bottom: 20px; right: 20px; color: white; padding: 12px 24px; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 1000; font-weight: 500; }
         .toast.show { transform: translateY(0); opacity: 1; }
-        .toast.success { background: #10b981; }
-        .toast.error { background: #ef4444; }
-        .toast.info { background: #3b82f6; }
+        .toast.success { background: #10b981; } .toast.error { background: #ef4444; } .toast.info { background: #3b82f6; }
     </style>
 </head>
 <body class="dashboard-body">
@@ -69,7 +43,7 @@
     <div class="dashboard-layout">
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <h2>Vidyapeeth.<span style="color: #64748b; font-size: 1rem; display:block;">PRO Admin</span></h2>
+                <h2>Vidyapeeth.<span style="color: #64748b; font-size: 1rem; display:block;">GOD MODE</span></h2>
             </div>
             <ul class="sidebar-menu">
                 <li><a href="#" class="active">📊 Overview</a></li>
@@ -87,10 +61,8 @@
                 <div class="header-search">
                     <input type="text" id="searchBox" placeholder="🔍 Search student by ID or Name...">
                 </div>
-                
                 <div class="header-profile" style="display: flex; align-items: center; gap: 15px;">
                     <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">☀️</button>
-                    
                     <div class="profile-info">
                         <img src="https://ui-avatars.com/api/?name=Admin&background=1e293b&color=fff" alt="Admin">
                         <span style="color: var(--text-main);">Director Sir</span>
@@ -110,6 +82,13 @@
                     </div>
                 </div>
 
+                <div class="widget stat-box" style="margin-bottom: 2rem;">
+                    <h3>📈 Revenue Growth Graph</h3>
+                    <div style="height: 250px; width: 100%;">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+
                 <div class="dashboard-widgets" style="align-items: flex-start; gap: 2rem;">
                     
                     <div class="widget stat-box" style="flex: 1;">
@@ -117,10 +96,8 @@
                         <form id="addStudentForm" style="margin-top: 1rem;">
                             <input type="hidden" id="editRecordId">
                             <input type="hidden" id="existingStudentId">
-                            
                             <input type="text" id="studentName" placeholder="Student Name" required style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border-col); border-radius: 8px;">
                             <input type="number" id="feesPaid" placeholder="Fees Paid (₹)" required style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border-col); border-radius: 8px;">
-                            
                             <button type="submit" id="submitBtn" class="btn-primary" style="width: 100%;">Save Record</button>
                             <button type="button" id="cancelEditBtn" style="width: 100%; margin-top: 10px; display: none; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-col); background: transparent; color: var(--text-main); cursor: pointer;">Cancel Edit</button>
                         </form>
@@ -134,9 +111,9 @@
                             <table class="student-table">
                                 <thead>
                                     <tr>
-                                        <th>Student ID</th>
+                                        <th>ID</th>
                                         <th>Name</th>
-                                        <th>Fees Paid</th>
+                                        <th>Fees</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -168,41 +145,38 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- DARK MODE LOGIC ---
+        // --- GLOBAL UI FUNCTIONS ---
         window.toggleTheme = () => {
             document.body.classList.toggle('dark-mode');
             const btn = document.getElementById('themeToggleBtn');
             if(document.body.classList.contains('dark-mode')){
-                btn.innerText = "🌙";
-                localStorage.setItem('theme', 'dark'); // Save choice
+                btn.innerText = "🌙"; localStorage.setItem('theme', 'dark');
             } else {
-                btn.innerText = "☀️";
-                localStorage.setItem('theme', 'light');
+                btn.innerText = "☀️"; localStorage.setItem('theme', 'light');
             }
         };
-        // Check saved theme on load
-        if(localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('themeToggleBtn').innerText = "🌙";
-        }
+        if(localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); document.getElementById('themeToggleBtn').innerText = "🌙"; }
 
         window.showToast = (msg, type = "success") => {
             const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerText = msg;
+            toast.className = `toast ${type}`; toast.innerText = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
         };
 
-        // --- ADD & UPDATE LOGIC (With Auto ID Generation) ---
+        // --- CHART.JS INITIALIZATION ---
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        let myChart = new Chart(ctx, {
+            type: 'bar', // Can be 'line' or 'bar'
+            data: { labels: [], datasets: [{ label: 'Fees Collected (₹)', data: [], backgroundColor: '#38bdf8', borderRadius: 5 }] },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // --- ADD/UPDATE DATA ---
         document.getElementById('addStudentForm').addEventListener('submit', async function(event) {
             event.preventDefault(); 
             const editId = document.getElementById('editRecordId').value;
-            const existingSid = document.getElementById('existingStudentId').value;
             const sName = document.getElementById('studentName').value;
             const sFees = document.getElementById('feesPaid').value;
             const btn = document.getElementById('submitBtn');
@@ -210,99 +184,53 @@
             btn.innerText = "Saving... ⏳"; 
             try {
                 if (editId) {
-                    await updateDoc(doc(db, "students", editId), {
-                        name: sName,
-                        fees: Number(sFees)
-                    });
-                    showToast("✏️ Record Updated Successfully!", "info");
-                    cancelEditMode();
+                    await updateDoc(doc(db, "students", editId), { name: sName, fees: Number(sFees) });
+                    showToast("✏️ Record Updated", "info"); cancelEditMode();
                 } else {
-                    // Generate Unique ID (e.g., VID-8452)
                     const generatedId = "VID-" + Math.floor(1000 + Math.random() * 9000);
-                    
                     await addDoc(collection(db, "students"), {
-                        studentId: generatedId,
-                        name: sName,
-                        fees: Number(sFees),
-                        date: new Date().toLocaleDateString(),
-                        timestamp: new Date().getTime() 
+                        studentId: generatedId, name: sName, fees: Number(sFees),
+                        date: new Date().toLocaleDateString(), timestamp: new Date().getTime() 
                     });
                     document.getElementById('addStudentForm').reset();
-                    showToast("🎉 Student Added (ID: " + generatedId + ")", "success");
+                    showToast("🎉 Student Added!", "success");
                 }
-            } catch (error) {
-                showToast("❌ Error saving data.", "error");
-            }
+            } catch (error) { showToast("❌ Error saving data.", "error"); }
             btn.innerText = "Save Record";
         });
 
         window.cancelEditMode = () => {
             document.getElementById('addStudentForm').reset();
-            document.getElementById('editRecordId').value = "";
-            document.getElementById('existingStudentId').value = "";
-            document.getElementById('formTitle').innerText = "➕ Add New Student";
-            document.getElementById('submitBtn').innerText = "Save Record";
+            document.getElementById('editRecordId').value = ""; document.getElementById('existingStudentId').value = "";
+            document.getElementById('formTitle').innerText = "➕ Add New Student"; document.getElementById('submitBtn').innerText = "Save Record";
             document.getElementById('cancelEditBtn').style.display = "none";
         };
-        document.getElementById('cancelEditBtn').addEventListener('click', cancelEditMode);
 
         window.editStudentRecord = (docId, currentName, currentFees, sId) => {
-            document.getElementById('editRecordId').value = docId;
-            document.getElementById('existingStudentId').value = sId;
-            document.getElementById('studentName').value = currentName;
-            document.getElementById('feesPaid').value = currentFees;
-            
+            document.getElementById('editRecordId').value = docId; document.getElementById('existingStudentId').value = sId;
+            document.getElementById('studentName').value = currentName; document.getElementById('feesPaid').value = currentFees;
             document.getElementById('formTitle').innerText = "✏️ Edit (ID: " + sId + ")";
-            document.getElementById('submitBtn').innerText = "Update Record";
-            document.getElementById('cancelEditBtn').style.display = "block";
+            document.getElementById('submitBtn').innerText = "Update Record"; document.getElementById('cancelEditBtn').style.display = "block";
         };
 
-        // --- PRINT RECEIPT (Now includes Student ID) ---
         window.printReceipt = (sId, name, fees, date) => {
             const printWindow = window.open('', '_blank', 'width=800,height=600');
             printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Fee Receipt - ${sId}</title>
-                    <style>
-                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #1e293b; }
-                        .receipt-box { border: 2px solid #cbd5e1; padding: 30px; border-radius: 12px; max-width: 600px; margin: 0 auto; position: relative;}
-                        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 5rem; color: rgba(0,0,0,0.03); z-index: -1; white-space: nowrap;}
-                        .header { text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 20px; margin-bottom: 20px; }
-                        .header h1 { margin: 0; color: #2563eb; }
-                        .details p { font-size: 1.1rem; margin: 10px 0; }
-                        .amount { font-size: 1.5rem; color: #10b981; font-weight: bold; text-align: center; margin: 30px 0; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;}
-                        .footer { text-align: center; margin-top: 40px; font-size: 0.9rem; color: #64748b; }
-                    </style>
-                </head>
-                <body>
-                    <div class="receipt-box">
-                        <div class="watermark">VIDYAPEETH</div>
-                        <div class="header">
-                            <h1>Vidyapeeth Coaching</h1>
-                            <p>Official Fee Receipt</p>
-                        </div>
-                        <div class="details">
-                            <p><strong>Student ID:</strong> <span style="color:#ef4444">${sId}</span></p>
-                            <p><strong>Student Name:</strong> ${name}</p>
-                            <p><strong>Date of Payment:</strong> ${date}</p>
-                            <p><strong>Payment Mode:</strong> Online / Cash</p>
-                        </div>
-                        <div class="amount">
-                            Total Paid: ₹${fees}
-                        </div>
-                        <div class="footer">
-                            <p>This is a computer-generated receipt and does not require a physical signature.</p>
-                            <p><strong>Receipt Generated ID:</strong> ${Math.floor(Math.random()*1000000)}</p>
-                        </div>
-                    </div>
-                    <script>
-                        window.onload = function() { window.print(); }
-                    <\/script>
-                </body>
-                </html>
+                <html><head><title>Receipt - ${sId}</title>
+                <style>body{font-family:sans-serif;padding:40px;}.box{border:2px solid #ccc;padding:30px;border-radius:10px;text-align:center;}</style></head>
+                <body><div class="box"><h2>Vidyapeeth Coaching</h2><h3>Fee Receipt</h3><hr>
+                <p><b>ID:</b> ${sId} | <b>Name:</b> ${name}</p><p><b>Amount Paid:</b> ₹${fees}</p><p><b>Date:</b> ${date}</p></div>
+                <script>window.onload=function(){window.print();}<\/script></body></html>
             `);
             printWindow.document.close();
+        };
+
+        // --- NEW: WHATSAPP INTEGRATION ---
+        window.sendWhatsApp = (sId, name, fees) => {
+            // Note: Since we don't save phone numbers yet, this opens WhatsApp web with a pre-filled message!
+            const message = `Hello ${name}! Welcome to Vidyapeeth Coaching. 🎉\n\nYour Registration ID is *${sId}*. We have successfully received your fee payment of *Rs.${fees}*.\n\nThank you!\n- Director Sir`;
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
         };
 
         // --- LIVE SYNC & RENDER ---
@@ -312,15 +240,25 @@
         onSnapshot(q, (snapshot) => {
             tableBody.innerHTML = ""; 
             let totalStudents = 0; let totalRevenue = 0;
+            
+            // For Chart Data
+            let chartLabels = [];
+            let chartData = [];
 
             if (snapshot.empty) {
                 tableBody.innerHTML = "<tr><td colspan='4' style='text-align: center;'>No students found. Add one!</td></tr>";
             } else {
                 snapshot.forEach((docSnap) => {
                     const student = docSnap.data();
-                    const sId = student.studentId || "N/A"; // Handle old records without ID
+                    const sId = student.studentId || "N/A"; 
                     totalStudents++;
                     totalRevenue += student.fees || 0;
+
+                    // Push data for Chart (Top 10 recent students)
+                    if(chartLabels.length < 10) {
+                        chartLabels.unshift(student.name); // Add to beginning for chronological order
+                        chartData.unshift(student.fees);
+                    }
 
                     const row = `
                         <tr>
@@ -328,9 +266,10 @@
                             <td style="font-weight: 500;" class="searchable-name">${student.name}</td>
                             <td style="color: #10b981; font-weight: bold;">₹${student.fees}</td>
                             <td>
-                                <button class="btn-action btn-edit" onclick="editStudentRecord('${docSnap.id}', '${student.name}', '${student.fees}', '${sId}')">✏️</button>
-                                <button class="btn-action btn-print" onclick="printReceipt('${sId}', '${student.name}', '${student.fees}', '${student.date}')">🖨️</button>
-                                <button class="btn-action btn-delete" onclick="deleteStudentRecord('${docSnap.id}')">🗑️</button>
+                                <button class="btn-action btn-whatsapp" title="Send WhatsApp" onclick="sendWhatsApp('${sId}', '${student.name}', '${student.fees}')">💬</button>
+                                <button class="btn-action btn-edit" title="Edit" onclick="editStudentRecord('${docSnap.id}', '${student.name}', '${student.fees}', '${sId}')">✏️</button>
+                                <button class="btn-action btn-print" title="Print" onclick="printReceipt('${sId}', '${student.name}', '${student.fees}', '${student.date}')">🖨️</button>
+                                <button class="btn-action btn-delete" title="Delete" onclick="deleteStudentRecord('${docSnap.id}')">🗑️</button>
                             </td>
                         </tr>
                     `;
@@ -339,48 +278,35 @@
             }
             document.getElementById('totalStudentsCount').innerText = totalStudents;
             document.getElementById('totalRevenueCount').innerText = "₹" + totalRevenue.toLocaleString('en-IN');
+
+            // Update Chart Live!
+            myChart.data.labels = chartLabels;
+            myChart.data.datasets[0].data = chartData;
+            myChart.update();
         });
 
         window.deleteStudentRecord = async (docId) => {
             if(confirm("Are you sure you want to delete this record?")) {
-                try {
-                    await deleteDoc(doc(db, "students", docId));
-                    showToast("🗑️ Record Deleted", "error");
-                } catch (error) {
-                    showToast("Error deleting record", "error");
-                }
+                await deleteDoc(doc(db, "students", docId)); showToast("🗑️ Record Deleted", "error");
             }
         };
 
         document.getElementById('searchBox').addEventListener('keyup', function(e) {
             const term = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('#studentTableBody tr');
-            rows.forEach(row => {
-                const textContent = row.innerText.toLowerCase(); // Searches both ID and Name now
-                row.style.display = textContent.includes(term) ? '' : 'none';
+            document.querySelectorAll('#studentTableBody tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none';
             });
         });
 
         window.exportToCSV = () => {
-            let csv = "Student ID,Student Name,Fees Paid,Date Enrolled\n"; 
-            const rows = document.querySelectorAll('#studentTableBody tr');
-            rows.forEach(row => {
+            let csv = "ID,Name,Fees,Date\n"; 
+            document.querySelectorAll('#studentTableBody tr').forEach(row => {
                 if(row.style.display !== 'none' && row.cells.length > 1) { 
-                    const sId = row.cells[0].innerText;
-                    const name = row.cells[1].innerText;
-                    const fees = row.cells[2].innerText.replace('₹', '');
-                    csv += `"${sId}","${name}","${fees}","Current"\n`; 
+                    csv += `"${row.cells[0].innerText}","${row.cells[1].innerText}","${row.cells[2].innerText.replace('₹', '')}","Current"\n`; 
                 }
             });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('hidden', ''); a.setAttribute('href', url);
-            a.setAttribute('download', 'Vidyapeeth_Pro_Data.csv');
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            showToast("📥 Excel File Downloaded!", "success");
+            const a = document.createElement('a'); a.setAttribute('href', window.URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))); a.setAttribute('download', 'Vidyapeeth_Data.csv'); document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast("📥 Excel Downloaded", "success");
         };
-
     </script>
 </body>
 </html>
