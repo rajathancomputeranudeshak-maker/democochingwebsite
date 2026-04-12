@@ -3,19 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Vidyapeeth (Pro Edition)</title>
+    <title>Admin Panel - Vidyapeeth (Ultra Pro)</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Table & Badge Styles */
         .student-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         .student-table th, .student-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
         .student-table th { background-color: #f8fafc; color: var(--secondary); font-weight: 600; }
         .student-table tr:hover { background-color: #f1f5f9; }
-        .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
-        .btn-delete:hover { background: #dc2626; }
+        
+        /* Action Buttons */
+        .btn-action { color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 4px; font-weight: bold;}
+        .btn-delete { background: #ef4444; } .btn-delete:hover { background: #dc2626; }
+        .btn-edit { background: #3b82f6; } .btn-edit:hover { background: #2563eb; }
+        .btn-print { background: #f59e0b; } .btn-print:hover { background: #d97706; }
+        
         .btn-export { background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; float: right;}
         
-        /* VIP Toast Notification Styles */
+        /* Toast Notifications */
         .toast {
             position: fixed; bottom: 20px; right: 20px;
             color: white; padding: 12px 24px; border-radius: 8px;
@@ -26,6 +30,7 @@
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.success { background: #10b981; }
         .toast.error { background: #ef4444; }
+        .toast.info { background: #3b82f6; }
     </style>
 </head>
 <body class="dashboard-body">
@@ -74,11 +79,15 @@
                 <div class="dashboard-widgets" style="align-items: flex-start; gap: 2rem;">
                     
                     <div class="widget" style="flex: 1;">
-                        <h3>➕ Quick Add Student</h3>
+                        <h3 id="formTitle">➕ Add New Student</h3>
                         <form id="addStudentForm" style="margin-top: 1rem;">
+                            <input type="hidden" id="editRecordId">
+                            
                             <input type="text" id="studentName" placeholder="Student Name" required style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #cbd5e1; border-radius: 8px;">
                             <input type="number" id="feesPaid" placeholder="Fees Paid (₹)" required style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            
                             <button type="submit" id="submitBtn" class="btn-primary" style="width: 100%;">Save Record</button>
+                            <button type="button" id="cancelEditBtn" style="width: 100%; margin-top: 10px; display: none; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; cursor: pointer;">Cancel Edit</button>
                         </form>
                     </div>
 
@@ -93,7 +102,7 @@
                                         <th>Name</th>
                                         <th>Fees Paid</th>
                                         <th>Date</th>
-                                        <th>Action</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="studentTableBody">
@@ -110,7 +119,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+        // updateDoc को इम्पोर्ट किया गया है
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAXqVjD-2nlKvhzqnrY2YFPjhpu9JUxuqc",
@@ -124,44 +134,119 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- NEW FEATURE: Professional Toast Notifications ---
         window.showToast = (msg, type = "success") => {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             toast.innerText = msg;
             document.body.appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 10); // Fade in
+            setTimeout(() => toast.classList.add('show'), 10);
             setTimeout(() => {
-                toast.classList.remove('show'); // Fade out
+                toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         };
 
-        // --- PART 1: ADD DATA ---
+        // --- ADD & UPDATE DATA LOGIC ---
         document.getElementById('addStudentForm').addEventListener('submit', async function(event) {
             event.preventDefault(); 
+            const editId = document.getElementById('editRecordId').value;
             const sName = document.getElementById('studentName').value;
             const sFees = document.getElementById('feesPaid').value;
             const btn = document.getElementById('submitBtn');
 
             btn.innerText = "Saving... ⏳"; 
             try {
-                await addDoc(collection(db, "students"), {
-                    name: sName,
-                    fees: Number(sFees),
-                    date: new Date().toLocaleDateString(),
-                    timestamp: new Date().getTime() 
-                });
-                document.getElementById('addStudentForm').reset();
-                btn.innerText = "Save Record";
-                showToast("🎉 Student Added Successfully!", "success"); // Changed from alert
+                if (editId) {
+                    // Update Existing Record
+                    await updateDoc(doc(db, "students", editId), {
+                        name: sName,
+                        fees: Number(sFees)
+                    });
+                    showToast("✏️ Record Updated Successfully!", "info");
+                    cancelEditMode();
+                } else {
+                    // Add New Record
+                    await addDoc(collection(db, "students"), {
+                        name: sName,
+                        fees: Number(sFees),
+                        date: new Date().toLocaleDateString(),
+                        timestamp: new Date().getTime() 
+                    });
+                    document.getElementById('addStudentForm').reset();
+                    showToast("🎉 Student Added Successfully!", "success");
+                }
             } catch (error) {
-                showToast("❌ Error saving data.", "error"); // Changed from alert
-                btn.innerText = "Save Record";
+                showToast("❌ Error saving data.", "error");
             }
+            btn.innerText = "Save Record";
         });
 
-        // --- PART 2: LIVE SYNC & CALCULATE STATS ---
+        // --- CANCEL EDIT MODE ---
+        window.cancelEditMode = () => {
+            document.getElementById('addStudentForm').reset();
+            document.getElementById('editRecordId').value = "";
+            document.getElementById('formTitle').innerText = "➕ Add New Student";
+            document.getElementById('submitBtn').innerText = "Save Record";
+            document.getElementById('cancelEditBtn').style.display = "none";
+        };
+        document.getElementById('cancelEditBtn').addEventListener('click', cancelEditMode);
+
+        // --- PREPARE EDIT MODE ---
+        window.editStudentRecord = (docId, currentName, currentFees) => {
+            document.getElementById('editRecordId').value = docId;
+            document.getElementById('studentName').value = currentName;
+            document.getElementById('feesPaid').value = currentFees;
+            
+            document.getElementById('formTitle').innerText = "✏️ Edit Student Record";
+            document.getElementById('submitBtn').innerText = "Update Record";
+            document.getElementById('cancelEditBtn').style.display = "block";
+        };
+
+        // --- PRINT RECEIPT FEATURE ---
+        window.printReceipt = (name, fees, date) => {
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Fee Receipt - Vidyapeeth</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #1e293b; }
+                        .receipt-box { border: 2px solid #cbd5e1; padding: 30px; border-radius: 12px; max-width: 600px; margin: 0 auto; }
+                        .header { text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 20px; margin-bottom: 20px; }
+                        .header h1 { margin: 0; color: #2563eb; }
+                        .details p { font-size: 1.1rem; margin: 10px 0; }
+                        .amount { font-size: 1.5rem; color: #10b981; font-weight: bold; text-align: center; margin: 30px 0; padding: 15px; background: #f8fafc; border-radius: 8px;}
+                        .footer { text-align: center; margin-top: 40px; font-size: 0.9rem; color: #64748b; }
+                    </style>
+                </head>
+                <body>
+                    <div class="receipt-box">
+                        <div class="header">
+                            <h1>Vidyapeeth Coaching</h1>
+                            <p>Official Fee Receipt</p>
+                        </div>
+                        <div class="details">
+                            <p><strong>Student Name:</strong> ${name}</p>
+                            <p><strong>Date of Payment:</strong> ${date}</p>
+                            <p><strong>Payment Mode:</strong> Online / Cash</p>
+                        </div>
+                        <div class="amount">
+                            Total Paid: ₹${fees}
+                        </div>
+                        <div class="footer">
+                            <p>This is a computer-generated receipt and does not require a physical signature.</p>
+                        </div>
+                    </div>
+                    <script>
+                        window.onload = function() { window.print(); }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        };
+
+        // --- LIVE SYNC & RENDER TABLE ---
         const tableBody = document.getElementById('studentTableBody');
         const q = query(collection(db, "students"), orderBy("timestamp", "desc"));
         
@@ -182,7 +267,11 @@
                             <td style="font-weight: 500;" class="searchable-name">${student.name}</td>
                             <td style="color: #10b981; font-weight: bold;">₹${student.fees}</td>
                             <td>${student.date}</td>
-                            <td><button class="btn-delete" onclick="deleteStudentRecord('${docSnap.id}')">🗑️ Delete</button></td>
+                            <td>
+                                <button class="btn-action btn-edit" onclick="editStudentRecord('${docSnap.id}', '${student.name}', '${student.fees}')">✏️ Edit</button>
+                                <button class="btn-action btn-print" onclick="printReceipt('${student.name}', '${student.fees}', '${student.date}')">🖨️ Print</button>
+                                <button class="btn-action btn-delete" onclick="deleteStudentRecord('${docSnap.id}')">🗑️</button>
+                            </td>
                         </tr>
                     `;
                     tableBody.innerHTML += row;
@@ -192,23 +281,20 @@
             document.getElementById('totalRevenueCount').innerText = "₹" + totalRevenue.toLocaleString('en-IN');
         });
 
-        // --- PART 3: DELETE DATA ---
         window.deleteStudentRecord = async (docId) => {
             if(confirm("Are you sure you want to delete this record?")) {
                 try {
                     await deleteDoc(doc(db, "students", docId));
-                    showToast("🗑️ Record Deleted", "error"); // Changed from alert
+                    showToast("🗑️ Record Deleted", "error");
                 } catch (error) {
                     showToast("Error deleting record", "error");
                 }
             }
         };
 
-        // --- NEW FEATURE: LIVE SEARCH FILTER ---
         document.getElementById('searchBox').addEventListener('keyup', function(e) {
             const term = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('#studentTableBody tr');
-            
             rows.forEach(row => {
                 const nameCell = row.querySelector('.searchable-name');
                 if(nameCell) {
@@ -218,32 +304,24 @@
             });
         });
 
-        // --- NEW FEATURE: EXPORT TO EXCEL (CSV) ---
         window.exportToCSV = () => {
-            let csv = "Student Name,Fees Paid,Date Enrolled\n"; // Headers
+            let csv = "Student Name,Fees Paid,Date Enrolled\n"; 
             const rows = document.querySelectorAll('#studentTableBody tr');
-            
             rows.forEach(row => {
                 const nameCell = row.querySelector('.searchable-name');
-                if(nameCell) { // Skip empty/loading rows
+                if(nameCell && row.style.display !== 'none') { 
                     const name = nameCell.innerText;
                     const fees = row.cells[1].innerText.replace('₹', '');
                     const date = row.cells[2].innerText;
-                    csv += `"${name}","${fees}","${date}"\n`; // Add to CSV string
+                    csv += `"${name}","${fees}","${date}"\n`; 
                 }
             });
-
-            // Create invisible download link
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.setAttribute('hidden', '');
-            a.setAttribute('href', url);
+            a.setAttribute('hidden', ''); a.setAttribute('href', url);
             a.setAttribute('download', 'Vidyapeeth_Students.csv');
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
             showToast("📥 Excel File Downloaded!", "success");
         };
 
