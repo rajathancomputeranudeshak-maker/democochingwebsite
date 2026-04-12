@@ -122,25 +122,27 @@
                     btn.innerText = "Create Account";
                 });
         });
+// 3. FORGOT PASSWORD LOGIC
+document.getElementById('forgotForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('forgotEmail').value; // Check karein ye ID input tag se match ho
+    const btn = document.getElementById('forgotBtn');
+    btn.innerText = "Sending... ⏳";
 
-        // 3. FORGOT PASSWORD
-        document.getElementById('forgotForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('forgotEmail').value;
-            const btn = document.getElementById('forgotBtn');
-            btn.innerText = "Sending... ⏳";
-
-            sendPasswordResetEmail(auth, email)
-                .then(() => {
-                    alert("✅ Password reset link sent to your email! Check your inbox.");
-                    showForm('login');
-                    btn.innerText = "Send Reset Link";
-                })
-                .catch((error) => {
-                    alert("Error: User not found or invalid email.");
-                    btn.innerText = "Send Reset Link";
-                });
+    sendPasswordResetEmail(auth, email)
+        .then(() => {
+            alert("✅ Link bhej diya gaya hai! Inbox aur Spam folder check karein.");
+            showForm('login');
+            btn.innerText = "Send Reset Link";
+        })
+        .catch((error) => {
+            // Agar email exist nahi karta toh yahan error aayega
+            console.error(error.code);
+            alert("Error: " + error.message);
+            btn.innerText = "Send Reset Link";
         });
+});
+   
     </script>
 </body>
 </html>
