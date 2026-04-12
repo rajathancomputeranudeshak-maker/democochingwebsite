@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Vidyapeeth</title>
+    <title>Admin Panel - Vidyapeeth (Final)</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* टेबल को सुंदर बनाने के लिए थोड़ा एक्स्ट्रा CSS */
         .student-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         .student-table th, .student-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
         .student-table th { background-color: #f8fafc; color: var(--secondary); font-weight: 600; }
         .student-table tr:hover { background-color: #f1f5f9; }
         .badge { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+        .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .btn-delete:hover { background: #dc2626; }
     </style>
 </head>
 <body class="dashboard-body">
@@ -35,7 +36,7 @@
         <main class="main-content">
             <header class="dashboard-header">
                 <div class="header-search">
-                    <input type="text" placeholder="Search student by name...">
+                    <h3 style="color: var(--secondary); margin: 0;">System Dashboard</h3>
                 </div>
                 <div class="header-profile">
                     <div class="profile-info">
@@ -48,7 +49,18 @@
             <div class="dashboard-content">
                 <div class="welcome-banner" style="background: linear-gradient(135deg, var(--secondary) 0%, #334155 100%);">
                     <h2>Admin Control Center ⚙️</h2>
-                    <p>Manage your coaching institute, track revenue, and monitor students.</p>
+                    <p>Live database connection is active. All records are synced directly with Google Firebase.</p>
+                </div>
+
+                <div class="stats-grid dashboard-stats">
+                    <div class="stat-box widget-card">
+                        <h3>👨‍🎓 Total Enrolled Students</h3>
+                        <p class="big-text" id="totalStudentsCount">0</p>
+                    </div>
+                    <div class="stat-box widget-card" style="border-left: 4px solid #10b981;">
+                        <h3>💳 Total Fees Collected</h3>
+                        <p class="big-text" style="color: #10b981;" id="totalRevenueCount">₹0</p>
+                    </div>
                 </div>
 
                 <div class="dashboard-widgets" style="align-items: flex-start; gap: 2rem;">
@@ -58,24 +70,24 @@
                         <form id="addStudentForm" style="margin-top: 1rem;">
                             <input type="text" id="studentName" placeholder="Student Name" required style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #cbd5e1; border-radius: 8px;">
                             <input type="number" id="feesPaid" placeholder="Fees Paid (₹)" required style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #cbd5e1; border-radius: 8px;">
-                            <button type="submit" id="submitBtn" class="btn-primary" style="width: 100%;">Add Record</button>
+                            <button type="submit" id="submitBtn" class="btn-primary" style="width: 100%;">Save Record</button>
                         </form>
                     </div>
 
                     <div class="widget" style="flex: 2;">
-                        <h3>📋 Recent Enrolled Students</h3>
+                        <h3>📋 Live Student Database</h3>
                         <div style="overflow-x: auto;">
                             <table class="student-table">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
                                         <th>Fees Paid</th>
-                                        <th>Date Enrolled</th>
-                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="studentTableBody">
-                                    <tr><td colspan="4" style="text-align: center;">Loading data... ⏳</td></tr>
+                                    <tr><td colspan="4" style="text-align: center;">Loading secure data... ⏳</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -88,8 +100,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-        // यहाँ हमने 'onSnapshot' जोड़ा है जो लाइव डेटा लाएगा
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+        // DeleteDoc और Doc इम्पोर्ट किया गया है
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAXqVjD-2nlKvhzqnrY2YFPjhpu9JUxuqc",
@@ -103,62 +115,78 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- PART 1: डेटा सेव करना (Create) ---
+        // --- PART 1: ADD DATA ---
         document.getElementById('addStudentForm').addEventListener('submit', async function(event) {
             event.preventDefault(); 
-            
             const sName = document.getElementById('studentName').value;
             const sFees = document.getElementById('feesPaid').value;
             const btn = document.getElementById('submitBtn');
 
             btn.innerText = "Saving... ⏳"; 
-
             try {
-                // डेटा के साथ timestamp भी सेव कर रहे हैं ताकि नए स्टूडेंट ऊपर दिखें
                 await addDoc(collection(db, "students"), {
                     name: sName,
-                    fees: sFees,
+                    fees: Number(sFees), // फीस को नंबर में बदल दिया ताकि गणित सही हो
                     date: new Date().toLocaleDateString(),
                     timestamp: new Date().getTime() 
                 });
-                
                 document.getElementById('addStudentForm').reset();
-                btn.innerText = "Add Record";
-                
+                btn.innerText = "Save Record";
             } catch (error) {
                 alert("❌ Error saving data.");
-                btn.innerText = "Add Record";
+                btn.innerText = "Save Record";
             }
         });
 
-        // --- PART 2: लाइव डेटा दिखाना (Read - The Magic) ---
+        // --- PART 2: LIVE SYNC & CALCULATE STATS ---
         const tableBody = document.getElementById('studentTableBody');
-        
-        // Firebase को बोलना कि जैसे ही 'students' में कुछ नया आए, तुरंत टेबल अपडेट कर दो
         const q = query(collection(db, "students"), orderBy("timestamp", "desc"));
         
         onSnapshot(q, (snapshot) => {
-            tableBody.innerHTML = ""; // टेबल खाली करना
+            tableBody.innerHTML = ""; 
             
+            let totalStudents = 0;
+            let totalRevenue = 0;
+
             if (snapshot.empty) {
-                tableBody.innerHTML = "<tr><td colspan='4' style='text-align: center;'>No students found. Add one!</td></tr>";
-                return;
+                tableBody.innerHTML = "<tr><td colspan='4' style='text-align: center;'>No students found. Data is empty.</td></tr>";
+            } else {
+                snapshot.forEach((docSnap) => {
+                    const student = docSnap.data();
+                    
+                    // Stats कैलकुलेट करना
+                    totalStudents++;
+                    totalRevenue += student.fees || 0;
+
+                    // टेबल में बटन के साथ दिखाना
+                    const row = `
+                        <tr>
+                            <td style="font-weight: 500;">${student.name}</td>
+                            <td style="color: #10b981; font-weight: bold;">₹${student.fees}</td>
+                            <td>${student.date}</td>
+                            <td><button class="btn-delete" onclick="deleteStudentRecord('${docSnap.id}')">🗑️ Delete</button></td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
             }
 
-            // एक-एक करके डेटा टेबल में डालना
-            snapshot.forEach((doc) => {
-                const student = doc.data();
-                const row = `
-                    <tr>
-                        <td style="font-weight: 500;">${student.name}</td>
-                        <td style="color: #10b981; font-weight: bold;">₹${student.fees}</td>
-                        <td>${student.date}</td>
-                        <td><span class="badge">Active</span></td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
+            // असली कमाई स्क्रीन पर दिखाना
+            document.getElementById('totalStudentsCount').innerText = totalStudents;
+            document.getElementById('totalRevenueCount').innerText = "₹" + totalRevenue.toLocaleString('en-IN');
         });
+
+        // --- PART 3: DELETE DATA (Global Function) ---
+        window.deleteStudentRecord = async (docId) => {
+            const confirmDelete = confirm("क्या आप सच में इस स्टूडेंट का रिकॉर्ड डिलीट करना चाहते हैं?");
+            if(confirmDelete) {
+                try {
+                    await deleteDoc(doc(db, "students", docId));
+                } catch (error) {
+                    alert("Error deleting record.");
+                }
+            }
+        };
 
     </script>
 </body>
