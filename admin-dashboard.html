@@ -3,22 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Vidyapeeth (Ultra Pro)</title>
+    <title>Admin Panel - Vidyapeeth (Infinity Edition)</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
+        /* CSS Variables for Dark/Light Mode Magic */
+        :root {
+            --panel-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --border-col: #e2e8f0;
+        }
+        
+        /* Dark Mode Theme */
+        body.dark-mode {
+            --panel-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --border-col: #334155;
+            background-color: var(--panel-bg);
+            color: var(--text-main);
+        }
+
+        /* Applying theme to specific elements */
+        body.dark-mode .dashboard-content, body.dark-mode .main-content { background: var(--panel-bg); }
+        body.dark-mode .widget, body.dark-mode .stat-box { background: var(--card-bg); border-color: var(--border-col); color: var(--text-main); }
+        body.dark-mode h3, body.dark-mode p { color: var(--text-main) !important; }
+        body.dark-mode input { background: #0f172a; color: white; border-color: #475569; }
+        body.dark-mode .student-table th { background-color: #0f172a; color: #38bdf8; border-color: var(--border-col); }
+        body.dark-mode .student-table td { border-color: var(--border-col); color: #cbd5e1; }
+        body.dark-mode .student-table tr:hover { background-color: #334155; }
+        body.dark-mode .header-search input { background: #1e293b; color: white;}
+        
+        /* Table & Action Buttons Styles */
         .student-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        .student-table th, .student-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        .student-table th { background-color: #f8fafc; color: var(--secondary); font-weight: 600; }
+        .student-table th, .student-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-col); }
+        .student-table th { background-color: #f8fafc; color: #1e293b; font-weight: 600; }
         .student-table tr:hover { background-color: #f1f5f9; }
         
-        /* Action Buttons */
         .btn-action { color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 4px; font-weight: bold;}
         .btn-delete { background: #ef4444; } .btn-delete:hover { background: #dc2626; }
         .btn-edit { background: #3b82f6; } .btn-edit:hover { background: #2563eb; }
         .btn-print { background: #f59e0b; } .btn-print:hover { background: #d97706; }
-        
         .btn-export { background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; float: right;}
         
+        /* Dark Mode Toggle Button */
+        .theme-toggle { background: transparent; border: 2px solid #cbd5e1; font-size: 1.2rem; cursor: pointer; padding: 5px 10px; border-radius: 20px; transition: 0.3s; }
+        body.dark-mode .theme-toggle { border-color: #475569; }
+
         /* Toast Notifications */
         .toast {
             position: fixed; bottom: 20px; right: 20px;
@@ -38,7 +69,7 @@
     <div class="dashboard-layout">
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <h2>Vidyapeeth.<span style="color: var(--text-muted); font-size: 1rem; display:block;">PRO Admin</span></h2>
+                <h2>Vidyapeeth.<span style="color: #64748b; font-size: 1rem; display:block;">PRO Admin</span></h2>
             </div>
             <ul class="sidebar-menu">
                 <li><a href="#" class="active">📊 Overview</a></li>
@@ -52,14 +83,17 @@
         </aside>
 
         <main class="main-content">
-            <header class="dashboard-header">
+            <header class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="header-search">
-                    <input type="text" id="searchBox" placeholder="🔍 Search student by name...">
+                    <input type="text" id="searchBox" placeholder="🔍 Search student by ID or Name...">
                 </div>
-                <div class="header-profile">
+                
+                <div class="header-profile" style="display: flex; align-items: center; gap: 15px;">
+                    <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">☀️</button>
+                    
                     <div class="profile-info">
                         <img src="https://ui-avatars.com/api/?name=Admin&background=1e293b&color=fff" alt="Admin">
-                        <span>Director Sir</span>
+                        <span style="color: var(--text-main);">Director Sir</span>
                     </div>
                 </div>
             </header>
@@ -78,20 +112,21 @@
 
                 <div class="dashboard-widgets" style="align-items: flex-start; gap: 2rem;">
                     
-                    <div class="widget" style="flex: 1;">
+                    <div class="widget stat-box" style="flex: 1;">
                         <h3 id="formTitle">➕ Add New Student</h3>
                         <form id="addStudentForm" style="margin-top: 1rem;">
                             <input type="hidden" id="editRecordId">
+                            <input type="hidden" id="existingStudentId">
                             
-                            <input type="text" id="studentName" placeholder="Student Name" required style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #cbd5e1; border-radius: 8px;">
-                            <input type="number" id="feesPaid" placeholder="Fees Paid (₹)" required style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            <input type="text" id="studentName" placeholder="Student Name" required style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border-col); border-radius: 8px;">
+                            <input type="number" id="feesPaid" placeholder="Fees Paid (₹)" required style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--border-col); border-radius: 8px;">
                             
                             <button type="submit" id="submitBtn" class="btn-primary" style="width: 100%;">Save Record</button>
-                            <button type="button" id="cancelEditBtn" style="width: 100%; margin-top: 10px; display: none; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; cursor: pointer;">Cancel Edit</button>
+                            <button type="button" id="cancelEditBtn" style="width: 100%; margin-top: 10px; display: none; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-col); background: transparent; color: var(--text-main); cursor: pointer;">Cancel Edit</button>
                         </form>
                     </div>
 
-                    <div class="widget" style="flex: 2;">
+                    <div class="widget stat-box" style="flex: 2;">
                         <h3>📋 Live Database 
                             <button onclick="exportToCSV()" class="btn-export">📥 Export Excel</button>
                         </h3>
@@ -99,9 +134,9 @@
                             <table class="student-table">
                                 <thead>
                                     <tr>
+                                        <th>Student ID</th>
                                         <th>Name</th>
                                         <th>Fees Paid</th>
-                                        <th>Date</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -119,7 +154,6 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-        // updateDoc को इम्पोर्ट किया गया है
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -134,6 +168,24 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // --- DARK MODE LOGIC ---
+        window.toggleTheme = () => {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.getElementById('themeToggleBtn');
+            if(document.body.classList.contains('dark-mode')){
+                btn.innerText = "🌙";
+                localStorage.setItem('theme', 'dark'); // Save choice
+            } else {
+                btn.innerText = "☀️";
+                localStorage.setItem('theme', 'light');
+            }
+        };
+        // Check saved theme on load
+        if(localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeToggleBtn').innerText = "🌙";
+        }
+
         window.showToast = (msg, type = "success") => {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -146,10 +198,11 @@
             }, 3000);
         };
 
-        // --- ADD & UPDATE DATA LOGIC ---
+        // --- ADD & UPDATE LOGIC (With Auto ID Generation) ---
         document.getElementById('addStudentForm').addEventListener('submit', async function(event) {
             event.preventDefault(); 
             const editId = document.getElementById('editRecordId').value;
+            const existingSid = document.getElementById('existingStudentId').value;
             const sName = document.getElementById('studentName').value;
             const sFees = document.getElementById('feesPaid').value;
             const btn = document.getElementById('submitBtn');
@@ -157,7 +210,6 @@
             btn.innerText = "Saving... ⏳"; 
             try {
                 if (editId) {
-                    // Update Existing Record
                     await updateDoc(doc(db, "students", editId), {
                         name: sName,
                         fees: Number(sFees)
@@ -165,15 +217,18 @@
                     showToast("✏️ Record Updated Successfully!", "info");
                     cancelEditMode();
                 } else {
-                    // Add New Record
+                    // Generate Unique ID (e.g., VID-8452)
+                    const generatedId = "VID-" + Math.floor(1000 + Math.random() * 9000);
+                    
                     await addDoc(collection(db, "students"), {
+                        studentId: generatedId,
                         name: sName,
                         fees: Number(sFees),
                         date: new Date().toLocaleDateString(),
                         timestamp: new Date().getTime() 
                     });
                     document.getElementById('addStudentForm').reset();
-                    showToast("🎉 Student Added Successfully!", "success");
+                    showToast("🎉 Student Added (ID: " + generatedId + ")", "success");
                 }
             } catch (error) {
                 showToast("❌ Error saving data.", "error");
@@ -181,51 +236,54 @@
             btn.innerText = "Save Record";
         });
 
-        // --- CANCEL EDIT MODE ---
         window.cancelEditMode = () => {
             document.getElementById('addStudentForm').reset();
             document.getElementById('editRecordId').value = "";
+            document.getElementById('existingStudentId').value = "";
             document.getElementById('formTitle').innerText = "➕ Add New Student";
             document.getElementById('submitBtn').innerText = "Save Record";
             document.getElementById('cancelEditBtn').style.display = "none";
         };
         document.getElementById('cancelEditBtn').addEventListener('click', cancelEditMode);
 
-        // --- PREPARE EDIT MODE ---
-        window.editStudentRecord = (docId, currentName, currentFees) => {
+        window.editStudentRecord = (docId, currentName, currentFees, sId) => {
             document.getElementById('editRecordId').value = docId;
+            document.getElementById('existingStudentId').value = sId;
             document.getElementById('studentName').value = currentName;
             document.getElementById('feesPaid').value = currentFees;
             
-            document.getElementById('formTitle').innerText = "✏️ Edit Student Record";
+            document.getElementById('formTitle').innerText = "✏️ Edit (ID: " + sId + ")";
             document.getElementById('submitBtn').innerText = "Update Record";
             document.getElementById('cancelEditBtn').style.display = "block";
         };
 
-        // --- PRINT RECEIPT FEATURE ---
-        window.printReceipt = (name, fees, date) => {
+        // --- PRINT RECEIPT (Now includes Student ID) ---
+        window.printReceipt = (sId, name, fees, date) => {
             const printWindow = window.open('', '_blank', 'width=800,height=600');
             printWindow.document.write(`
                 <html>
                 <head>
-                    <title>Fee Receipt - Vidyapeeth</title>
+                    <title>Fee Receipt - ${sId}</title>
                     <style>
                         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #1e293b; }
-                        .receipt-box { border: 2px solid #cbd5e1; padding: 30px; border-radius: 12px; max-width: 600px; margin: 0 auto; }
+                        .receipt-box { border: 2px solid #cbd5e1; padding: 30px; border-radius: 12px; max-width: 600px; margin: 0 auto; position: relative;}
+                        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 5rem; color: rgba(0,0,0,0.03); z-index: -1; white-space: nowrap;}
                         .header { text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 20px; margin-bottom: 20px; }
                         .header h1 { margin: 0; color: #2563eb; }
                         .details p { font-size: 1.1rem; margin: 10px 0; }
-                        .amount { font-size: 1.5rem; color: #10b981; font-weight: bold; text-align: center; margin: 30px 0; padding: 15px; background: #f8fafc; border-radius: 8px;}
+                        .amount { font-size: 1.5rem; color: #10b981; font-weight: bold; text-align: center; margin: 30px 0; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;}
                         .footer { text-align: center; margin-top: 40px; font-size: 0.9rem; color: #64748b; }
                     </style>
                 </head>
                 <body>
                     <div class="receipt-box">
+                        <div class="watermark">VIDYAPEETH</div>
                         <div class="header">
                             <h1>Vidyapeeth Coaching</h1>
                             <p>Official Fee Receipt</p>
                         </div>
                         <div class="details">
+                            <p><strong>Student ID:</strong> <span style="color:#ef4444">${sId}</span></p>
                             <p><strong>Student Name:</strong> ${name}</p>
                             <p><strong>Date of Payment:</strong> ${date}</p>
                             <p><strong>Payment Mode:</strong> Online / Cash</p>
@@ -235,6 +293,7 @@
                         </div>
                         <div class="footer">
                             <p>This is a computer-generated receipt and does not require a physical signature.</p>
+                            <p><strong>Receipt Generated ID:</strong> ${Math.floor(Math.random()*1000000)}</p>
                         </div>
                     </div>
                     <script>
@@ -246,7 +305,7 @@
             printWindow.document.close();
         };
 
-        // --- LIVE SYNC & RENDER TABLE ---
+        // --- LIVE SYNC & RENDER ---
         const tableBody = document.getElementById('studentTableBody');
         const q = query(collection(db, "students"), orderBy("timestamp", "desc"));
         
@@ -259,17 +318,18 @@
             } else {
                 snapshot.forEach((docSnap) => {
                     const student = docSnap.data();
+                    const sId = student.studentId || "N/A"; // Handle old records without ID
                     totalStudents++;
                     totalRevenue += student.fees || 0;
 
                     const row = `
                         <tr>
+                            <td style="font-weight: bold; color: #64748b;">${sId}</td>
                             <td style="font-weight: 500;" class="searchable-name">${student.name}</td>
                             <td style="color: #10b981; font-weight: bold;">₹${student.fees}</td>
-                            <td>${student.date}</td>
                             <td>
-                                <button class="btn-action btn-edit" onclick="editStudentRecord('${docSnap.id}', '${student.name}', '${student.fees}')">✏️ Edit</button>
-                                <button class="btn-action btn-print" onclick="printReceipt('${student.name}', '${student.fees}', '${student.date}')">🖨️ Print</button>
+                                <button class="btn-action btn-edit" onclick="editStudentRecord('${docSnap.id}', '${student.name}', '${student.fees}', '${sId}')">✏️</button>
+                                <button class="btn-action btn-print" onclick="printReceipt('${sId}', '${student.name}', '${student.fees}', '${student.date}')">🖨️</button>
                                 <button class="btn-action btn-delete" onclick="deleteStudentRecord('${docSnap.id}')">🗑️</button>
                             </td>
                         </tr>
@@ -296,31 +356,27 @@
             const term = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('#studentTableBody tr');
             rows.forEach(row => {
-                const nameCell = row.querySelector('.searchable-name');
-                if(nameCell) {
-                    const name = nameCell.innerText.toLowerCase();
-                    row.style.display = name.includes(term) ? '' : 'none';
-                }
+                const textContent = row.innerText.toLowerCase(); // Searches both ID and Name now
+                row.style.display = textContent.includes(term) ? '' : 'none';
             });
         });
 
         window.exportToCSV = () => {
-            let csv = "Student Name,Fees Paid,Date Enrolled\n"; 
+            let csv = "Student ID,Student Name,Fees Paid,Date Enrolled\n"; 
             const rows = document.querySelectorAll('#studentTableBody tr');
             rows.forEach(row => {
-                const nameCell = row.querySelector('.searchable-name');
-                if(nameCell && row.style.display !== 'none') { 
-                    const name = nameCell.innerText;
-                    const fees = row.cells[1].innerText.replace('₹', '');
-                    const date = row.cells[2].innerText;
-                    csv += `"${name}","${fees}","${date}"\n`; 
+                if(row.style.display !== 'none' && row.cells.length > 1) { 
+                    const sId = row.cells[0].innerText;
+                    const name = row.cells[1].innerText;
+                    const fees = row.cells[2].innerText.replace('₹', '');
+                    csv += `"${sId}","${name}","${fees}","Current"\n`; 
                 }
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.setAttribute('hidden', ''); a.setAttribute('href', url);
-            a.setAttribute('download', 'Vidyapeeth_Students.csv');
+            a.setAttribute('download', 'Vidyapeeth_Pro_Data.csv');
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
             showToast("📥 Excel File Downloaded!", "success");
         };
